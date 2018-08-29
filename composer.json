@@ -1,0 +1,28 @@
+{
+    "name": "websummercamp/design-patterns",
+    "description": "PHP Design Patterns Workshop",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hugo Hamon",
+            "email": "hugo@dayuse.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "WebSummerCamp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": { "WebSummerCamp\\Tests\\": "tests/" }
+    },
+    "require": {
+        "moneyphp/money": "^3.1",
+        "ramsey/uuid": "^3.8",
+        "beberlei/assert": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.3"
+    }
+}
