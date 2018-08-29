@@ -5,7 +5,7 @@ namespace WebSummerCamp\Tests\WebShop\Coupon;
 use Money\Currency;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
-use WebSummerCamp\WebShop\Coupon\CouponBuilder;
+use WebSummerCamp\WebShop\Coupon\DefaultCouponBuilder;
 use WebSummerCamp\WebShop\Coupon\LimitedLifetimeCoupon;
 use WebSummerCamp\WebShop\Coupon\MinimumPurchaseAmountCoupon;
 use WebSummerCamp\WebShop\Coupon\RateCoupon;
@@ -24,7 +24,7 @@ class CouponBuilderTest extends TestCase
             new \DateTimeImmutable('2018-12-31 23:59:59')
         );
 
-        $coupon = CouponBuilder::ofValue('COUPON123', 'EUR 1500')
+        $coupon = DefaultCouponBuilder::ofValue('COUPON123', 'EUR 1500')
             ->mustRequireMinimumPurchaseAmount('EUR 7500')
             ->mustBeValidBetween('2018-01-01 00:00:00', '2018-12-31 23:59:59')
             ->getCoupon()
@@ -37,7 +37,7 @@ class CouponBuilderTest extends TestCase
     {
         $this->assertEquals(
             new ValueCoupon('COUPON123', new Money(2000, new Currency('EUR'))),
-            CouponBuilder::ofValue('COUPON123', 'EUR 2000')->getCoupon()
+            DefaultCouponBuilder::ofValue('COUPON123', 'EUR 2000')->getCoupon()
         );
     }
 
@@ -45,7 +45,7 @@ class CouponBuilderTest extends TestCase
     {
         $this->assertEquals(
             new RateCoupon('COUPON123', .25),
-            CouponBuilder::ofRate('COUPON123', .25)->getCoupon()
+            DefaultCouponBuilder::ofRate('COUPON123', .25)->getCoupon()
         );
     }
 }
