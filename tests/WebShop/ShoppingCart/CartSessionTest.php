@@ -7,6 +7,8 @@ use Money\Money;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use WebSummerCamp\EventSourcing\EventStore;
+use WebSummerCamp\EventSourcing\FilesystemEventStorage;
+use WebSummerCamp\EventSourcing\InMemoryEventStorage;
 use WebSummerCamp\WebShop\ShoppingCart\CartSession;
 use WebSummerCamp\WebShop\ShoppingCart\CartSessionId;
 use WebSummerCamp\WebShop\PhysicalProduct;
@@ -31,22 +33,14 @@ class CartSessionTest extends TestCase
 
         $this->assertCount(5, $session->getRecordedEvents());
 
-        $store = new EventStore('/tmp/event-store');
+        //$store = new EventStore(new FilesystemEventStorage('/tmp/event-store'));
+        $store = new EventStore(new InMemoryEventStorage());
         $store->store($session->getRecordedEvents());
 
         $newSession = CartSession::fromEventStream($sessionId, $store->getStream($sessionId));
 
         $this->assertTrue($newSession->initiated);
         $this->assertArrayHasKey('ccd110b4-28cd-4c2a-98f2-3cdb95c3c101', $newSession->content);
-    }
-
-    protected function setUp(): void
-    {
-        if (is_dir('/tmp/event-store')) {
-            @rmdir('/tmp/event-store');
-        }
-
-        @mkdir('/tmp/event-store', 0777);
     }
 
     private function createProduct(string $sku, string $name, int $amount): Product

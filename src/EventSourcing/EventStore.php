@@ -6,14 +6,11 @@ use Assert\Assertion;
 
 class EventStore
 {
-    private $directory;
+    private $storage;
 
-    public function __construct(string $directory)
+    public function __construct(EventStorage $storage)
     {
-        Assertion::directory($directory);
-        Assertion::writeable($directory);
-
-        $this->directory = $directory;
+        $this->storage = $storage;
     }
 
     public function store(RecordedEvents $recordedEvents): void
@@ -28,8 +25,7 @@ class EventStore
             $events[] = $this->normalize($event);
         }
 
-        $aggregateStorePath = sprintf('%s/%s.json', $this->directory, $aggregateId->toString());
-        file_put_contents($aggregateStorePath, json_encode($events));
+        $this->storage->store($aggregateId, $events);
     }
 
     private function normalize(DomainEvent $domainEvent): array
@@ -50,13 +46,8 @@ class EventStore
      */
     public function getStream(AggregateIdentifier $identifier): array
     {
-        $aggregateStorePath = sprintf('%s/%s.json', $this->directory, $identifier->toString());
-        Assertion::file($aggregateStorePath);
-
-        $events = json_decode(file_get_contents($aggregateStorePath), true);
-
         $stream = [];
-        foreach ($events as $event) {
+        foreach ($this->storage->fetch($identifier) as $event) {
             $stream[] = call_user_func_array([$event['_headers']['eventType'], 'fromPayload'], [$event]);
         }
 
